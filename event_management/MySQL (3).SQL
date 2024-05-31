@@ -1,0 +1,108 @@
+-- Drop existing tables if they exist
+DROP TABLE IF EXISTS `address`;
+DROP TABLE IF EXISTS `attendee`;
+DROP TABLE IF EXISTS `event`;
+DROP TABLE IF EXISTS `organizer`;
+DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS `sponsors`;
+DROP TABLE IF EXISTS `presenters`;
+
+-- Create tables
+
+CREATE TABLE `address` (
+  `STREETADDRESS` VARCHAR(255) PRIMARY KEY,
+  `CITY` VARCHAR(100) NOT NULL,
+  `USSTATE` VARCHAR(2) NOT NULL,
+  `POSTALCODE` VARCHAR(10) NOT NULL,
+  `COUNTRY` VARCHAR(2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `attendee` (
+  `USEREMAIL` VARCHAR(255) PRIMARY KEY,
+  `ATTENDED` INTEGER NOT NULL,
+  `ENROLL` INTEGER NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `event` (
+  `NAME` VARCHAR(255) PRIMARY KEY,
+  `DESCRIPTION` TEXT NOT NULL,
+  `DATE` INTEGER NOT NULL,
+  `DATEEND` INTEGER NOT NULL,
+  `CAPACITY` INTEGER NOT NULL,
+  `PRESENTERS` TEXT NOT NULL,
+  `KEYNOTES` TEXT NOT NULL,
+  `SPONSORS` TEXT NOT NULL,
+  `VENUE` VARCHAR(255) NOT NULL,
+  `UNIVERSITY` VARCHAR(255) NOT NULL,
+  `EVENTPUBLIC` INTEGER NOT NULL,
+  `PRESENTATIONTYPE` VARCHAR(255) NOT NULL,
+  `STATUS` INTEGER NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `organizer` (
+  `USEREMAIL` VARCHAR(255) NOT NULL,
+  `ADDEVENT` INTEGER NOT NULL,
+  `UPDATEEVENT` INTEGER NOT NULL,
+  `CANCELEVENT` INTEGER NOT NULL,
+  `CLOSEEVENT` INTEGER NOT NULL,
+  `REPUBLISHEVENT` INTEGER NOT NULL,
+  `EVENTPUBLIC` INTEGER NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `users` (
+  `EMAIL` VARCHAR(255) PRIMARY KEY,
+  `LastName` VARCHAR(100) NOT NULL,
+  `FirstName` VARCHAR(100) NOT NULL,
+  `PHONENUMBER` BIGINT NOT NULL,
+  `PASSWORD` VARCHAR(255) NOT NULL,
+  `ROLES` VARCHAR(255) NOT NULL,
+  `EVENTS` VARCHAR(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `sponsors` (
+  `SPONSOREMAIL` VARCHAR(100) PRIMARY KEY
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `presenters` (
+  `PRESENTEREMAIL` VARCHAR(100) PRIMARY KEY,
+  `PHONENUMBER` INTEGER NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Insert some values
+
+INSERT INTO `address` VALUES ('800 N State College Blvd', 'Fullerton', 'CA', '92831', 'US');
+INSERT INTO `address` VALUES ('1599 Valencia Ave', 'Tustin', 'CA', '92782', 'US');
+
+INSERT INTO `attendee` VALUES ('Mark Hamil', 100, 1);
+INSERT INTO `attendee` VALUES ('Elton John', 50, 1);
+
+INSERT INTO `event` VALUES ('Pizza Party', 'Free Pizza', 20240101, 20240102, 200, 'Mark Hamil', 'Elton John', 'NIKE', 'Library', 'CSUF', 1, 'Physical', 2);
+INSERT INTO `event` VALUES ('Movie Night', 'Spooky Scary Skeletons', 20240101, 20240102, 50, 'Elton John', 'Mark Hamil', 'Ubisoft', 'Theatre', 'UCLA', 0, 'Physical', 1);
+
+INSERT INTO `organizer` VALUES ('RealEmail@FakeEmail.com', 1, 0, 1, 1, 0, 1);
+INSERT INTO `organizer` VALUES ('FakeEmail@RealEmail.com', 1, 0, 1, 1, 0, 1);
+
+INSERT INTO `users` VALUES ('RealEmail@FakeEmail.com', 'Hamil', 'Mark', 1234567890, 'TotallySafePassword', 'Organizer', 'Pizza Party');
+INSERT INTO `users` VALUES ('FakeEmail@RealEmail.com', 'John', 'Elton', 9876543210, 'UnsafePassword', 'Organizer', 'Movie Night');
+
+-- Insert default admin user
+INSERT INTO `users` VALUES ('admin@example.com', 'Admin', 'Admin', 1234567890, 'adminpassword', 'Admin', '');
+
+-- Fetch some values
+
+SELECT * FROM `address`;
+SELECT * FROM `attendee`;
+SELECT * FROM `event`;
+SELECT * FROM `organizer`;
+SELECT * FROM `users`;
+
+-- Queries for Class
+
+CREATE VIEW UsersTable AS
+SELECT FirstName, LastName, EMAIL, PHONENUMBER FROM `users` WHERE EVENTS > 10 AND ROLES = 'Organizer';
+
+CREATE VIEW EventsTable AS
+SELECT * FROM `event` WHERE CAPACITY > 100;
+
+CREATE VIEW ClosedTable AS
+SELECT * FROM `event` WHERE STATUS = 0 OR STATUS = 1;
